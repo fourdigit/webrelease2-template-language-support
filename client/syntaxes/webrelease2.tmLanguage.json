@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "WebRelease Template",
-  "scopeName": "text.html.webrelease",
+  "name": "WebRelease2 Template",
+  "scopeName": "text.html.webrelease2",
   "patterns": [
     {
       "include": "#wr-comments"
@@ -20,30 +20,30 @@
     "wr-comments": {
       "patterns": [
         {
-          "name": "comment.block.webrelease",
+          "name": "comment.block.webrelease2",
           "begin": "<wr-comment>",
           "end": "</wr-comment>",
-          "contentName": "comment.block.webrelease"
+          "contentName": "comment.block.webrelease2"
         }
       ]
     },
     "wr-expressions": {
       "patterns": [
         {
-          "name": "meta.expression.webrelease",
+          "name": "meta.expression.webrelease2",
           "begin": "%(?!%)",
           "end": "%(?!%)",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.expression.begin.webrelease"
+              "name": "punctuation.definition.expression.begin.webrelease2"
             }
           },
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.expression.end.webrelease"
+              "name": "punctuation.definition.expression.end.webrelease2"
             }
           },
-          "contentName": "meta.embedded.expression.webrelease",
+          "contentName": "meta.embedded.expression.webrelease2",
           "patterns": [
             {
               "include": "#expression-contents"
@@ -55,60 +55,60 @@
     "expression-contents": {
       "patterns": [
         {
-          "name": "keyword.operator.comparison.webrelease",
+          "name": "keyword.operator.comparison.webrelease2",
           "match": "==|!=|<=|>=|<|>"
         },
         {
-          "name": "keyword.operator.logical.webrelease",
+          "name": "keyword.operator.logical.webrelease2",
           "match": "&&|\\|\\||!"
         },
         {
-          "name": "keyword.operator.arithmetic.webrelease",
+          "name": "keyword.operator.arithmetic.webrelease2",
           "match": "\\+|-|\\*|/"
         },
         {
-          "name": "support.function.webrelease",
+          "name": "support.function.webrelease2",
           "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale|selectedValue|selectedName|selected|unsplit|generatePrice|generateBenefit|generateBakuage)\\b"
         },
         {
-          "name": "string.quoted.double.webrelease",
+          "name": "string.quoted.double.webrelease2",
           "begin": "\"",
           "end": "\"",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.string.begin.webrelease"
+              "name": "punctuation.definition.string.begin.webrelease2"
             }
           },
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.end.webrelease"
+              "name": "punctuation.definition.string.end.webrelease2"
             }
           },
           "patterns": [
             {
-              "name": "constant.character.escape.webrelease",
+              "name": "constant.character.escape.webrelease2",
               "match": "\\\\."
             }
           ]
         },
         {
-          "name": "constant.numeric.webrelease",
+          "name": "constant.numeric.webrelease2",
           "match": "\\b\\d+(\\.\\d+)?\\b"
         },
         {
-          "name": "punctuation.accessor.webrelease",
+          "name": "punctuation.accessor.webrelease2",
           "match": "\\."
         },
         {
-          "name": "punctuation.bracket.webrelease",
+          "name": "punctuation.bracket.webrelease2",
           "match": "[\\[\\]()]"
         },
         {
-          "name": "punctuation.separator.webrelease",
+          "name": "punctuation.separator.webrelease2",
           "match": ","
         },
         {
-          "name": "variable.other.webrelease",
+          "name": "variable.other.webrelease2",
           "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
         }
       ]
@@ -116,20 +116,20 @@
     "wr-tags": {
       "patterns": [
         {
-          "name": "meta.tag.webrelease",
+          "name": "meta.tag.webrelease2",
           "begin": "(<)(wr--|wr-(?:if|then|else|switch|case|default|for|break|variable|append|clear|return|error|conditional|cond|comment))(?=\\s|/?>)",
           "beginCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.webrelease"
+              "name": "punctuation.definition.tag.begin.webrelease2"
             },
             "2": {
-              "name": "entity.name.tag.webrelease"
+              "name": "entity.name.tag.webrelease2"
             }
           },
           "end": "/?>",
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.tag.end.webrelease"
+              "name": "punctuation.definition.tag.end.webrelease2"
             }
           },
           "patterns": [
@@ -139,17 +139,17 @@
           ]
         },
         {
-          "name": "meta.tag.webrelease.close",
+          "name": "meta.tag.webrelease2.close",
           "match": "(</)(wr--|wr-(?:if|then|else|switch|case|default|for|break|variable|append|clear|return|error|conditional|cond|comment))(\\s*>?)",
           "captures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.webrelease"
+              "name": "punctuation.definition.tag.begin.webrelease2"
             },
             "2": {
-              "name": "entity.name.tag.webrelease"
+              "name": "entity.name.tag.webrelease2"
             },
             "3": {
-              "name": "punctuation.definition.tag.end.webrelease"
+              "name": "punctuation.definition.tag.end.webrelease2"
             }
           }
         }
@@ -158,32 +158,32 @@
     "wr-tag-attributes": {
       "patterns": [
         {
-          "name": "entity.other.attribute-name.webrelease",
+          "name": "entity.other.attribute-name.webrelease2",
           "match": "\\b(condition|list|string|times|variable|count|index|value|name|message)\\b"
         },
         {
           "begin": "(=)\\s*(')",
           "beginCaptures": {
             "1": {
-              "name": "punctuation.separator.key-value.webrelease"
+              "name": "punctuation.separator.key-value.webrelease2"
             },
             "2": {
-              "name": "punctuation.definition.string.begin.webrelease"
+              "name": "punctuation.definition.string.begin.webrelease2"
             }
           },
           "end": "'",
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.end.webrelease"
+              "name": "punctuation.definition.string.end.webrelease2"
             }
           },
-          "contentName": "string.quoted.single.webrelease",
+          "contentName": "string.quoted.single.webrelease2",
           "patterns": [
             {
               "include": "#wr-expressions"
             },
             {
-              "name": "constant.character.escape.webrelease",
+              "name": "constant.character.escape.webrelease2",
               "match": "\\\\."
             }
           ]
@@ -192,25 +192,25 @@
           "begin": "(=)\\s*(\")",
           "beginCaptures": {
             "1": {
-              "name": "punctuation.separator.key-value.webrelease"
+              "name": "punctuation.separator.key-value.webrelease2"
             },
             "2": {
-              "name": "punctuation.definition.string.begin.webrelease"
+              "name": "punctuation.definition.string.begin.webrelease2"
             }
           },
           "end": "\"",
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.end.webrelease"
+              "name": "punctuation.definition.string.end.webrelease2"
             }
           },
-          "contentName": "string.quoted.double.webrelease",
+          "contentName": "string.quoted.double.webrelease2",
           "patterns": [
             {
               "include": "#wr-expressions"
             },
             {
-              "name": "constant.character.escape.webrelease",
+              "name": "constant.character.escape.webrelease2",
               "match": "\\\\."
             }
           ]

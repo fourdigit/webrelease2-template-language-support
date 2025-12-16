@@ -1,6 +1,6 @@
-# WebRelease Template Language Support
+# WebRelease2 Template Language Support
 
-VS Code extension providing language support for WebRelease template language with syntax highlighting, validation, and code completion.
+VS Code extension providing language support for WebRelease2 template language with syntax highlighting, validation, and code completion.
 
 **No external dependencies required** - Just install the extension and start using it!
 
@@ -8,7 +8,7 @@ VS Code extension providing language support for WebRelease template language wi
 
 ### Syntax Highlighting
 
-Full syntax highlighting for WebRelease template files including:
+Full syntax highlighting for WebRelease2 template files including:
 - Expression highlighting (`%...%`)
 - Tag highlighting (`<wr-*>`)
 - Comment highlighting
@@ -65,12 +65,12 @@ Documentation on hover for:
 ### From Command Line
 
 ```bash
-code --install-extension webrelease-template-lsp-0.2.0.vsix
+code --install-extension webrelease2-template-lsp-0.6.0.vsix
 ```
 
 ## Supported File Extensions
 
-- `.wr`
+- `.wr2`
 - `.wrt`
 
 ## Supported Tags

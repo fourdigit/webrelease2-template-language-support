@@ -1,18 +1,18 @@
-# WebRelease Template Language Support
+# WebRelease2 Template Language Support
 
-VS Code向けのWebReleaseテンプレート言語サポート拡張機能です。
+VS Code向けのWebRelease2テンプレート言語サポート拡張機能です。
 
 ## 機能
 
-- **構文ハイライト**: WebReleaseテンプレートの構文をハイライト表示
+- **構文ハイライト**: WebRelease2テンプレートの構文をハイライト表示
 - **構文チェック**: 式やタグの構文エラーを検出
 - **コード補完**: 拡張タグ、属性、関数の補完候補を表示
 - **ホバー情報**: 関数やタグのドキュメントを表示
 
 ## 対応ファイル
 
-- `.wr` - WebReleaseテンプレートファイル
-- `.wrt` - WebReleaseテンプレートファイル
+- `.wr2` - WebRelease2テンプレートファイル
+- `.wrt` - WebRelease2テンプレートファイル
 
 ## 前提条件
 
@@ -27,7 +27,7 @@ VS Code向けのWebReleaseテンプレート言語サポート拡張機能です
 
 ## 使用方法
 
-`.wr` または `.wrt` 拡張子のファイルを開くと、自動的にWebRelease Template言語がアクティブになります。
+`.wr2` または `.wrt` 拡張子のファイルを開くと、自動的にWebRelease2 Template言語がアクティブになります。
 
 ### 構文チェック
 
@@ -65,8 +65,7 @@ VS Code向けのWebReleaseテンプレート言語サポート拡張機能です
 
 | 設定 | 説明 | デフォルト |
 |------|------|----------|
-| `webrelease.lsp.pythonPath` | Pythonインタープリタのパス | `python3` |
-| `webrelease.lsp.trace.server` | サーバーとの通信トレース | `off` |
+| `webrelease2.lsp.trace.server` | サーバーとの通信トレース | `off` |
 
 ## ライセンス
 

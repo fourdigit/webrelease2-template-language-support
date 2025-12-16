@@ -1,5 +1,5 @@
 /**
- * WebRelease テンプレート言語パーサー
+ * WebRelease2 テンプレート言語パーサー
  */
 
 export interface Position {
@@ -36,7 +36,7 @@ const BUILT_IN_FUNCTIONS = new Set([
   'selectedValue', 'selectedName', 'selected'
 ]);
 
-// 有効な WebRelease タグ
+// 有効な WebRelease2 タグ
 const VALID_TAGS = new Set([
   'wr-if', 'wr-then', 'wr-else', 'wr-switch', 'wr-case', 'wr-default',
   'wr-for', 'wr-break', 'wr-variable', 'wr-append', 'wr-clear',
@@ -72,7 +72,7 @@ const NO_CLOSE_TAGS = new Set([
 ]);
 
 /**
- * WebRelease テンプレート式のパーサー
+ * WebRelease2 テンプレート式のパーサー
  */
 class ExpressionParser {
   private expression: string;
@@ -639,14 +639,14 @@ export class TemplateParser {
 export const TAG_COMPLETIONS = Array.from(VALID_TAGS).map(tag => ({
   label: tag,
   kind: 14, // Keyword
-  detail: `WebRelease タグ: ${tag}`,
+  detail: `WebRelease2 タグ: ${tag}`,
   documentation: getTagDocumentation(tag)
 }));
 
 export const FUNCTION_COMPLETIONS = Array.from(BUILT_IN_FUNCTIONS).map(func => ({
   label: func,
   kind: 3, // Function
-  detail: `WebRelease 関数: ${func}()`,
+  detail: `WebRelease2 関数: ${func}()`,
   insertText: `${func}()`
 }));
 

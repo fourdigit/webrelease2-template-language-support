@@ -1,7 +1,7 @@
 {
-  "name": "webrelease-template-lsp",
-  "displayName": "WebRelease Template Language Support",
-  "description": "Language support for WebRelease template language with syntax highlighting, validation, and code completion",
+  "name": "webrelease2-template-lsp",
+  "displayName": "WebRelease2 Template Language Support",
+  "description": "Language support for WebRelease2 template language with syntax highlighting, validation, and code completion",
   "version": "0.6.0",
   "publisher": "fourdigit",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "Linters"
   ],
   "keywords": [
+    "webrelease2",
     "webrelease",
     "template",
     "language",
@@ -24,19 +25,19 @@
     "html"
   ],
   "activationEvents": [
-    "onLanguage:webrelease"
+    "onLanguage:webrelease2"
   ],
   "main": "./client/out/extension.js",
   "contributes": {
     "languages": [
       {
-        "id": "webrelease",
+        "id": "webrelease2",
         "aliases": [
-          "WebRelease Template",
-          "webrelease"
+          "WebRelease2 Template",
+          "webrelease2"
         ],
         "extensions": [
-          ".wr",
+          ".wr2",
           ".wrt"
         ],
         "configuration": "./client/language-configuration.json"
@@ -44,9 +45,9 @@
     ],
     "grammars": [
       {
-        "language": "webrelease",
-        "scopeName": "text.html.webrelease",
-        "path": "./client/syntaxes/webrelease.tmLanguage.json",
+        "language": "webrelease2",
+        "scopeName": "text.html.webrelease2",
+        "path": "./client/syntaxes/webrelease2.tmLanguage.json",
         "embeddedLanguages": {
           "source.css": "css",
           "source.js": "javascript",
@@ -54,8 +55,8 @@
         }
       },
       {
-        "scopeName": "text.html.webrelease.injection",
-        "path": "./client/syntaxes/webrelease-injection.tmLanguage.json",
+        "scopeName": "text.html.webrelease2.injection",
+        "path": "./client/syntaxes/webrelease2-injection.tmLanguage.json",
         "injectTo": [
           "text.html",
           "source.json"
@@ -64,9 +65,9 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "WebRelease Template LSP",
+      "title": "WebRelease2 Template LSP",
       "properties": {
-        "webrelease.lsp.trace.server": {
+        "webrelease2.lsp.trace.server": {
           "type": "string",
           "enum": [
             "off",

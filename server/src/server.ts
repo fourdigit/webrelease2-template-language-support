@@ -35,20 +35,20 @@ const connection = createConnection(ProposedFeatures.all);
 // テキストドキュメント管理を作成
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-// HTML Language Service (for HTML hover/completions in .wr)
-const webreleaseHtmlDataProvider = newHTMLDataProvider('webrelease', {
+// HTML Language Service (for HTML hover/completions in .wr2)
+const webreleaseHtmlDataProvider = newHTMLDataProvider('webrelease2', {
   version: 1.1,
   tags: [
     {
       name: 'wr-if',
-      description: 'WebRelease: conditional rendering',
+      description: 'WebRelease2: conditional rendering',
       attributes: [{ name: 'condition', description: 'Expression to evaluate' }]
     },
-    { name: 'wr-then', description: 'WebRelease: true branch', attributes: [] },
-    { name: 'wr-else', description: 'WebRelease: false branch', attributes: [] },
+    { name: 'wr-then', description: 'WebRelease2: true branch', attributes: [] },
+    { name: 'wr-else', description: 'WebRelease2: false branch', attributes: [] },
     {
       name: 'wr-for',
-      description: 'WebRelease: loop',
+      description: 'WebRelease2: loop',
       attributes: [
         { name: 'list', description: 'Iterable list' },
         { name: 'string', description: 'Iterable string (by char)' },
@@ -60,18 +60,18 @@ const webreleaseHtmlDataProvider = newHTMLDataProvider('webrelease', {
     },
     {
       name: 'wr-switch',
-      description: 'WebRelease: switch',
+      description: 'WebRelease2: switch',
       attributes: [{ name: 'value', description: 'Value to switch on' }]
     },
     {
       name: 'wr-case',
-      description: 'WebRelease: case',
+      description: 'WebRelease2: case',
       attributes: [{ name: 'value', description: 'Case value' }]
     },
-    { name: 'wr-default', description: 'WebRelease: default case', attributes: [] },
+    { name: 'wr-default', description: 'WebRelease2: default case', attributes: [] },
     {
       name: 'wr-variable',
-      description: 'WebRelease: define variable',
+      description: 'WebRelease2: define variable',
       attributes: [
         { name: 'name', description: 'Variable name' },
         { name: 'value', description: 'Value expression' }
@@ -79,7 +79,7 @@ const webreleaseHtmlDataProvider = newHTMLDataProvider('webrelease', {
     },
     {
       name: 'wr-append',
-      description: 'WebRelease: append to variable',
+      description: 'WebRelease2: append to variable',
       attributes: [
         { name: 'name', description: 'Variable name' },
         { name: 'value', description: 'Value to append' }
@@ -87,22 +87,22 @@ const webreleaseHtmlDataProvider = newHTMLDataProvider('webrelease', {
     },
     {
       name: 'wr-clear',
-      description: 'WebRelease: clear variable',
+      description: 'WebRelease2: clear variable',
       attributes: [{ name: 'name', description: 'Variable name' }]
     },
     {
       name: 'wr-break',
-      description: 'WebRelease: break loop',
+      description: 'WebRelease2: break loop',
       attributes: [{ name: 'condition', description: 'Optional break condition' }]
     },
     {
       name: 'wr-return',
-      description: 'WebRelease: return value',
+      description: 'WebRelease2: return value',
       attributes: [{ name: 'value', description: 'Return value expression' }]
     },
     {
       name: 'wr-error',
-      description: 'WebRelease: raise error',
+      description: 'WebRelease2: raise error',
       attributes: [
         { name: 'condition', description: 'Condition to raise error' },
         { name: 'message', description: 'Error message' }
@@ -110,17 +110,17 @@ const webreleaseHtmlDataProvider = newHTMLDataProvider('webrelease', {
     },
     {
       name: 'wr-conditional',
-      description: 'WebRelease: conditional block',
+      description: 'WebRelease2: conditional block',
       attributes: [{ name: 'condition', description: 'Expression to evaluate' }]
     },
     {
       name: 'wr-cond',
-      description: 'WebRelease: condition within wr-conditional',
+      description: 'WebRelease2: condition within wr-conditional',
       attributes: [{ name: 'condition', description: 'Expression to evaluate' }]
     },
-    { name: 'wr-comment', description: 'WebRelease: comment block (not rendered)', attributes: [] }
+    { name: 'wr-comment', description: 'WebRelease2: comment block (not rendered)', attributes: [] }
     ,
-    { name: 'wr--', description: 'WebRelease: comment block (alias of wr-comment)', attributes: [] }
+    { name: 'wr--', description: 'WebRelease2: comment block (alias of wr-comment)', attributes: [] }
   ]
 });
 
@@ -159,8 +159,8 @@ function isInsideWebreleaseExpression(text: string, offset: number): boolean {
   return count % 2 === 1;
 }
 
-// In WebRelease templates, many wr-* attributes accept expressions or identifiers
-// that benefit from WebRelease function completion.
+// In WebRelease2 templates, many wr-* attributes accept expressions or identifiers
+// that benefit from WebRelease2 function completion.
 const WEBRELEASE_EXPRESSION_ATTRIBUTES = new Set([
   'condition',
   'value',
@@ -270,7 +270,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
       end: { line: d.range.end.line, character: d.range.end.character }
     },
     message: d.message,
-    source: 'webrelease',
+    source: 'webrelease2',
     code: d.code
   }));
 

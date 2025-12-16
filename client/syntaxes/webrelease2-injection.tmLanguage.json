@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "WebRelease Expression Injection",
-  "scopeName": "text.html.webrelease.injection",
-  "injectionSelector": "L:text.html -comment -text.html.webrelease, L:source.json -comment -text.html.webrelease",
+  "name": "WebRelease2 Expression Injection",
+  "scopeName": "text.html.webrelease2.injection",
+  "injectionSelector": "L:text.html -comment -text.html.webrelease2, L:source.json -comment -text.html.webrelease2",
   "patterns": [
     {
       "include": "#wr-expressions"
@@ -12,20 +12,20 @@
     "wr-expressions": {
       "patterns": [
         {
-          "name": "meta.expression.webrelease",
+          "name": "meta.expression.webrelease2",
           "begin": "%(?!%)",
           "end": "%(?!%)",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.expression.begin.webrelease"
+              "name": "punctuation.definition.expression.begin.webrelease2"
             }
           },
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.expression.end.webrelease"
+              "name": "punctuation.definition.expression.end.webrelease2"
             }
           },
-          "contentName": "meta.embedded.expression.webrelease",
+          "contentName": "meta.embedded.expression.webrelease2",
           "patterns": [
             {
               "include": "#expression-contents"
@@ -37,60 +37,60 @@
     "expression-contents": {
       "patterns": [
         {
-          "name": "keyword.operator.comparison.webrelease",
+          "name": "keyword.operator.comparison.webrelease2",
           "match": "==|!=|<=|>=|<|>"
         },
         {
-          "name": "keyword.operator.logical.webrelease",
+          "name": "keyword.operator.logical.webrelease2",
           "match": "&&|\\|\\||!"
         },
         {
-          "name": "keyword.operator.arithmetic.webrelease",
+          "name": "keyword.operator.arithmetic.webrelease2",
           "match": "\\+|-|\\*|/"
         },
         {
-          "name": "support.function.webrelease",
+          "name": "support.function.webrelease2",
           "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale|selectedValue|selectedName|selected|unsplit|generatePrice|generateBenefit|generateBakuage)\\b"
         },
         {
-          "name": "string.quoted.double.webrelease",
+          "name": "string.quoted.double.webrelease2",
           "begin": "\"",
           "end": "\"",
           "beginCaptures": {
             "0": {
-              "name": "punctuation.definition.string.begin.webrelease"
+              "name": "punctuation.definition.string.begin.webrelease2"
             }
           },
           "endCaptures": {
             "0": {
-              "name": "punctuation.definition.string.end.webrelease"
+              "name": "punctuation.definition.string.end.webrelease2"
             }
           },
           "patterns": [
             {
-              "name": "constant.character.escape.webrelease",
+              "name": "constant.character.escape.webrelease2",
               "match": "\\\\."
             }
           ]
         },
         {
-          "name": "constant.numeric.webrelease",
+          "name": "constant.numeric.webrelease2",
           "match": "\\b\\d+(\\.\\d+)?\\b"
         },
         {
-          "name": "punctuation.accessor.webrelease",
+          "name": "punctuation.accessor.webrelease2",
           "match": "\\."
         },
         {
-          "name": "punctuation.bracket.webrelease",
+          "name": "punctuation.bracket.webrelease2",
           "match": "[\\[\\]()]"
         },
         {
-          "name": "punctuation.separator.webrelease",
+          "name": "punctuation.separator.webrelease2",
           "match": ","
         },
         {
-          "name": "variable.other.webrelease",
+          "name": "variable.other.webrelease2",
           "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
         }
       ]

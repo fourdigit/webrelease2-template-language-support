@@ -11,7 +11,7 @@ let client: LanguageClient;
 let outputChannel: OutputChannel;
 
 export function activate(context: ExtensionContext) {
-    outputChannel = window.createOutputChannel('WebRelease Template LSP');
+    outputChannel = window.createOutputChannel('WebRelease2 Template LSP');
     
     // Get the server module path (Node.js based)
     const serverModule = context.asAbsolutePath(
@@ -37,23 +37,23 @@ export function activate(context: ExtensionContext) {
     
     // Client options
     const clientOptions: LanguageClientOptions = {
-        // Register the server for WebRelease template documents
+        // Register the server for WebRelease2 template documents
         documentSelector: [
-            { scheme: 'file', language: 'webrelease' },
-            { scheme: 'file', pattern: '**/*.wr' },
+            { scheme: 'file', language: 'webrelease2' },
+            { scheme: 'file', pattern: '**/*.wr2' },
             { scheme: 'file', pattern: '**/*.wrt' }
         ],
         synchronize: {
             // Notify the server about file changes
-            fileEvents: workspace.createFileSystemWatcher('**/*.{wr,wrt}')
+            fileEvents: workspace.createFileSystemWatcher('**/*.{wr2,wrt}')
         },
         outputChannel: outputChannel,
     };
     
     // Create the language client
     client = new LanguageClient(
-        'webrelease-lsp',
-        'WebRelease Template Language Server',
+        'webrelease2-lsp',
+        'WebRelease2 Template Language Server',
         serverOptions,
         clientOptions
     );
@@ -61,7 +61,7 @@ export function activate(context: ExtensionContext) {
     // Start the client (this will also launch the server)
     client.start();
     
-    outputChannel.appendLine('WebRelease Template LSP started');
+    outputChannel.appendLine('WebRelease2 Template LSP started');
     
     // Push the disposable to the context's subscriptions
     context.subscriptions.push(client);

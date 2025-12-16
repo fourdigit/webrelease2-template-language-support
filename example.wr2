@@ -19,16 +19,34 @@
         </wr-else>
         <wr-if cont="isNotNull(email)">
             <wr-then>
-                <p class="email">メールアドレス: <a href="mailto:%email%">%email%</a></p>
+                <p class="email" aria-label="メールアドレス">メールアドレス: <a href="mailto:%email%">%email%</a></p>
             </wr-then>
             <wr-else>
                 <p>メールアドレスは登録されていません</p>
             </wr-else>
-                <wr-for list="items" variable="item">
-                    <p>%items.name%</p>
-                </wr-for>
         </wr-if>
+        <wr-for list="items" variable="item">
+            <p>%items.name%</p>
+        </wr-for>
+
     </wr-if>
+    <wr-for list='card.selectPriceInfo' variable="info">
+    <wr-conditional>
+        <wr-cond condition='info.selectedName() == "grpPriceInfo"'>
+            <wr-variable name='priceInfo' value='info.selectedValue()'></wr-variable>
+            <div class="m-service-category-card__price">
+                %priceInfo.radioPaymentType%：%generatePrice(priceInfo.grpPrice)%
+                %generateBenefit(priceInfo.grpBenefit)%
+                %generateBakuage(priceInfo.grpBakuage)%
+            </div>
+        </wr-cond>
+        <wr-cond condition='info.selectedName() == "grpPriceInfoHtml"'>
+            <div class="m-service-category-card__price">
+                %card.selectPriceInfo.selectedValue().txtHtml%
+            </div>
+        </wr-cond>
+    </wr-conditional>
+	
     
     <!-- ループの例 -->
     <h2>記事一覧</h2>
