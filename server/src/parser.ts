@@ -1,5 +1,5 @@
 /**
- * WebRelease Template Language Parser
+ * WebRelease テンプレート言語パーサー
  */
 
 export interface Position {
@@ -14,19 +14,19 @@ export interface Range {
 
 export interface Diagnostic {
   range: Range;
-  severity: number; // 1=Error, 2=Warning, 3=Information, 4=Hint
+  severity: number; // 1=エラー, 2=警告, 3=情報, 4=ヒント
   message: string;
   code?: string;
 }
 
-// Functions that can only be called on single elements (not lists)
+// 単一要素に対してのみ呼び出せる関数（リストには不可）
 const SINGLE_ELEMENT_FUNCTIONS = new Set([
   'selectedValue',
   'selectedName',
   'selected'
 ]);
 
-// Built-in functions
+// 組み込み関数
 const BUILT_IN_FUNCTIONS = new Set([
   'pageTitle', 'currentTime', 'formatDate', 'isNull', 'isNotNull', 'isNumber',
   'number', 'string', 'divide', 'setScale', 'length', 'substring', 'indexOf',
@@ -36,14 +36,14 @@ const BUILT_IN_FUNCTIONS = new Set([
   'selectedValue', 'selectedName', 'selected'
 ]);
 
-// Valid WebRelease tags
+// 有効な WebRelease タグ
 const VALID_TAGS = new Set([
   'wr-if', 'wr-then', 'wr-else', 'wr-switch', 'wr-case', 'wr-default',
   'wr-for', 'wr-break', 'wr-variable', 'wr-append', 'wr-clear',
   'wr-return', 'wr-error', 'wr-conditional', 'wr-cond', 'wr-comment'
 ]);
 
-// Tag attributes
+// タグの属性
 const TAG_ATTRIBUTES: Record<string, string[]> = {
   'wr-if': ['condition'],
   'wr-then': [],
@@ -63,7 +63,7 @@ const TAG_ATTRIBUTES: Record<string, string[]> = {
   'wr-comment': [],
 };
 
-// Tags that don't require closing tags
+// 閉じタグ（</wr-...>）が不要なタグ
 const NO_CLOSE_TAGS = new Set([
   'wr-then', 'wr-else', 'wr-case', 'wr-default',
   'wr-variable', 'wr-append', 'wr-clear', 'wr-break',
@@ -71,7 +71,7 @@ const NO_CLOSE_TAGS = new Set([
 ]);
 
 /**
- * Expression Parser for WebRelease template expressions
+ * WebRelease テンプレート式のパーサー
  */
 class ExpressionParser {
   private expression: string;
@@ -163,12 +163,12 @@ class ExpressionParser {
 
     while (true) {
       if (this.match('(')) {
-        // Function call
+        // 関数呼び出し
         const funcName = elementChain.length > 0 ? elementChain[elementChain.length - 1] : null;
         this.parseFunctionArguments();
         this.expect(')');
 
-        // Check if this is a single-element function called on a list
+        // リスト要素に対して単一要素向け関数を呼んでいないかチェック
         if (funcName && SINGLE_ELEMENT_FUNCTIONS.has(funcName)) {
           if (elementChain.length > 1) {
             const elementPath = elementChain.slice(0, -1).join('.');
@@ -176,14 +176,14 @@ class ExpressionParser {
           }
         }
 
-        elementChain.length = 0; // Reset after function call
+        elementChain.length = 0; // 関数呼び出し後はチェーンをリセット
       } else if (this.match('[')) {
-        // Array access
+        // 配列アクセス
         this.parseExpression();
         this.expect(']');
-        elementChain.length = 0; // Array access produces a single element
+        elementChain.length = 0; // 配列アクセスの結果は単一要素になる
       } else if (this.match('.')) {
-        // Member access
+        // メンバーアクセス
         const member = this.parseIdentifier();
         if (member) {
           elementChain.push(member);
@@ -195,23 +195,23 @@ class ExpressionParser {
   }
 
   private checkListFunctionCall(elementPath: string, funcName: string): void {
-    // Check if the element path itself is a list element
+    // パス自体がリスト要素かどうか
     if (this.listElements.has(elementPath)) {
       this.errors.push({
         position: this.pos,
-        message: `Cannot call '${funcName}()' on list element '${elementPath}'. Use a loop variable instead.`
+        message: `リスト要素 '${elementPath}' に対して '${funcName}()' は呼び出せません。代わりにループ変数を使用してください。`
       });
       return;
     }
 
-    // Check if any prefix of the path is a list element
+    // パスの途中（プレフィックス）がリスト要素になっていないか
     const parts = elementPath.split('.');
     for (let i = 0; i < parts.length; i++) {
       const prefix = parts.slice(0, i + 1).join('.');
       if (this.listElements.has(prefix)) {
         this.errors.push({
           position: this.pos,
-          message: `Cannot call '${funcName}()' on list element '${prefix}'. Use a loop variable to iterate over the list first.`
+          message: `リスト要素 '${prefix}' に対して '${funcName}()' は呼び出せません。先にループ変数でリストを反復してください。`
         });
         return;
       }
@@ -222,27 +222,27 @@ class ExpressionParser {
     this.skipWhitespace();
 
     if (this.pos >= this.expression.length) {
-      throw new Error('Unexpected end of expression');
+      throw new Error('式の末尾に到達しました（式が途中で終わっています）');
     }
 
-    // String literal
+    // 文字列リテラル
     if (this.expression[this.pos] === '"') {
       this.parseStringLiteral();
       return null;
     }
-    // Number literal
+    // 数値リテラル
     if (/\d/.test(this.expression[this.pos])) {
       this.parseNumberLiteral();
       return null;
     }
-    // Parenthesized expression
+    // 括弧で囲まれた式
     if (this.expression[this.pos] === '(') {
       this.match('(');
       this.parseExpression();
       this.expect(')');
       return null;
     }
-    // Identifier
+    // 識別子
     return this.parseIdentifier();
   }
 
@@ -282,7 +282,7 @@ class ExpressionParser {
 
     while (this.pos < this.expression.length && this.expression[this.pos] !== '"') {
       if (this.expression[this.pos] === '\\' && this.pos + 1 < this.expression.length) {
-        this.pos += 2; // Skip escaped character
+        this.pos += 2; // エスケープされた文字をスキップ
       } else {
         this.pos++;
       }
@@ -316,7 +316,7 @@ class ExpressionParser {
   }
 
   private matchAnyOperator(ops: string[]): boolean {
-    // Sort by length descending to match longest first
+    // 長い演算子を優先してマッチさせるため、長さの降順に並べる
     const sortedOps = [...ops].sort((a, b) => b.length - a.length);
     for (const op of sortedOps) {
       if (this.matchOperator(op)) {
@@ -329,7 +329,7 @@ class ExpressionParser {
   private expect(ch: string): void {
     this.skipWhitespace();
     if (this.pos >= this.expression.length || this.expression[this.pos] !== ch) {
-      throw new Error(`Expected '${ch}' at position ${this.pos}`);
+      throw new Error(`位置 ${this.pos} で '${ch}' が必要です`);
     }
     this.pos++;
   }
@@ -359,16 +359,16 @@ export class TemplateParser {
     this.listElements = new Set();
     this.loopVariables = new Map();
 
-    // First pass: collect list elements from wr-for tags
+    // 1回目の走査: wr-for からリスト要素を収集
     this.collectListElements();
 
-    // Validate expressions
+    // 式の検証
     this.validateExpressions();
 
-    // Validate tags
+    // タグの検証
     this.validateTags();
 
-    // Validate tag closures
+    // 閉じタグの検証
     this.validateTagClosures();
 
     return this.diagnostics;
@@ -412,12 +412,12 @@ export class TemplateParser {
       const expression = match[1];
       const startPos = match.index;
 
-      // Skip %% (escaped percent)
+      // %%（% のエスケープ）は式として扱わない
       if (expression === '') {
         continue;
       }
 
-      // Parse expression with list element context
+      // リスト要素の文脈を考慮して式を解析
       const parser = new ExpressionParser(
         expression,
         this.listElements,
@@ -433,12 +433,12 @@ export class TemplateParser {
             end: { line, character: character + expression.length + 2 }
           },
           severity: 1,
-          message: `Expression error: ${result.errorMessage}`,
+          message: `式のエラー: ${result.errorMessage}`,
           code: 'expr-error'
         });
       }
 
-      // Check for additional errors from the parser
+      // パーサーが追加で検出したエラー（例: リスト要素に対する関数呼び出し）も拾う
       for (const error of parser.getErrors()) {
         const { line, character } = this.getLineColumn(startPos);
         this.diagnostics.push({
@@ -471,19 +471,19 @@ export class TemplateParser {
             end: { line, character: character + tagName.length + 2 }
           },
           severity: 1,
-          message: `Unknown tag: ${tagName}`,
+          message: `不明なタグ: ${tagName}`,
           code: 'unknown-tag'
         });
         continue;
       }
 
-      // Validate attributes
+      // 属性の検証
       this.validateTagAttributes(tagName, attributesStr, startPos);
     }
   }
 
   private validateTagAttributes(tagName: string, attributesStr: string, startPos: number): void {
-    // Match both single and double quoted attributes
+    // シングル/ダブルクォート両方の属性に対応
     const attrPattern = /(\w+)='([^']*)'|(\w+)="([^"]*)"/g;
     let match;
 
@@ -491,7 +491,7 @@ export class TemplateParser {
       const attrName = match[1] || match[3];
       const attrValue = match[2] || match[4];
 
-      // Check if attribute is valid for this tag
+      // そのタグで使用可能な属性かチェック
       const validAttrs = TAG_ATTRIBUTES[tagName] || [];
       if (!validAttrs.includes(attrName)) {
         const { line, character } = this.getLineColumn(startPos + match.index);
@@ -501,12 +501,12 @@ export class TemplateParser {
             end: { line, character: character + attrName.length }
           },
           severity: 2,
-          message: `Unknown attribute '${attrName}' for tag '${tagName}'`,
+          message: `タグ '${tagName}' に不明な属性 '${attrName}' があります`,
           code: 'unknown-attribute'
         });
       }
 
-      // Validate condition attribute
+      // condition 属性の式を検証
       if (attrName === 'condition' && attrValue) {
         const parser = new ExpressionParser(
           attrValue,
@@ -523,12 +523,12 @@ export class TemplateParser {
               end: { line, character: character + attrValue.length }
             },
             severity: 1,
-            message: `Condition syntax error: ${result.errorMessage}`,
+            message: `condition の構文エラー: ${result.errorMessage}`,
             code: 'condition-syntax-error'
           });
         }
 
-        // Check for list function errors
+        // リスト要素に対する関数呼び出しなどのエラーも拾う
         for (const error of parser.getErrors()) {
           const { line, character } = this.getLineColumn(startPos);
           this.diagnostics.push({
@@ -549,7 +549,7 @@ export class TemplateParser {
     const openPattern = /<wr-(\w+)(?:\s|>)/g;
     const closePattern = /<\/wr-(\w+)>/g;
 
-    // Collect all tag events with positions
+    // すべてのタグイベント（開始/終了）を位置付きで収集
     const events: Array<{ type: 'open' | 'close'; tagName: string; pos: number }> = [];
 
     let match;
@@ -561,10 +561,10 @@ export class TemplateParser {
       events.push({ type: 'close', tagName: 'wr-' + match[1], pos: match.index });
     }
 
-    // Sort events by position
+    // 位置順にソート
     events.sort((a, b) => a.pos - b.pos);
 
-    // Stack-based validation
+    // スタックで整合性を検証
     const tagStack: Array<{ tagName: string; pos: number }> = [];
 
     for (const event of events) {
@@ -577,7 +577,7 @@ export class TemplateParser {
           continue;
         }
 
-        // Find matching opening tag in stack
+        // スタックから対応する開始タグを探す
         let found = false;
         for (let i = tagStack.length - 1; i >= 0; i--) {
           if (tagStack[i].tagName === event.tagName) {
@@ -595,14 +595,14 @@ export class TemplateParser {
               end: { line, character: character + event.tagName.length + 3 }
             },
             severity: 1,
-            message: `Closing tag '${event.tagName}' without matching opening tag`,
+            message: `閉じタグ '${event.tagName}' に対応する開始タグがありません`,
             code: 'unmatched-closing-tag'
           });
         }
       }
     }
 
-    // Check for unclosed tags
+    // 閉じられていないタグを検出
     for (const { tagName, pos } of tagStack) {
       const { line, character } = this.getLineColumn(pos);
       this.diagnostics.push({
@@ -611,7 +611,7 @@ export class TemplateParser {
           end: { line, character: character + tagName.length + 2 }
         },
         severity: 1,
-        message: `Unclosed tag '${tagName}'`,
+        message: `タグ '${tagName}' が閉じられていません`,
         code: 'unclosed-tag'
       });
     }
@@ -634,39 +634,39 @@ export class TemplateParser {
   }
 }
 
-// Export completion items
+// 補完アイテムをエクスポート
 export const TAG_COMPLETIONS = Array.from(VALID_TAGS).map(tag => ({
   label: tag,
   kind: 14, // Keyword
-  detail: `WebRelease tag: ${tag}`,
+  detail: `WebRelease タグ: ${tag}`,
   documentation: getTagDocumentation(tag)
 }));
 
 export const FUNCTION_COMPLETIONS = Array.from(BUILT_IN_FUNCTIONS).map(func => ({
   label: func,
   kind: 3, // Function
-  detail: `WebRelease function: ${func}()`,
+  detail: `WebRelease 関数: ${func}()`,
   insertText: `${func}()`
 }));
 
 function getTagDocumentation(tag: string): string {
   const docs: Record<string, string> = {
-    'wr-if': 'Conditional rendering. Use with wr-then and wr-else.',
-    'wr-then': 'Content to render when wr-if condition is true.',
-    'wr-else': 'Content to render when wr-if condition is false.',
-    'wr-for': 'Loop over a list, string, or number of times.',
-    'wr-switch': 'Switch statement for multiple conditions.',
-    'wr-case': 'Case within a wr-switch block.',
-    'wr-default': 'Default case within a wr-switch block.',
-    'wr-variable': 'Define a variable.',
-    'wr-append': 'Append value to a variable.',
-    'wr-clear': 'Clear a variable.',
-    'wr-break': 'Break out of a loop.',
-    'wr-return': 'Return a value.',
-    'wr-error': 'Raise an error.',
-    'wr-conditional': 'Conditional block.',
-    'wr-cond': 'Condition within wr-conditional.',
-    'wr-comment': 'Comment block (not rendered).'
+    'wr-if': '条件分岐（条件付きレンダリング）。wr-then / wr-else と組み合わせて使います。',
+    'wr-then': 'wr-if の条件が真のときに出力する内容です。',
+    'wr-else': 'wr-if の条件が偽のときに出力する内容です。',
+    'wr-for': 'リスト/文字列/回数（times）で繰り返します。',
+    'wr-switch': '複数の分岐を扱う switch 構文です。',
+    'wr-case': 'wr-switch ブロック内の case です。',
+    'wr-default': 'wr-switch ブロック内の default（既定）です。',
+    'wr-variable': '変数を定義します。',
+    'wr-append': '変数に値を追記します。',
+    'wr-clear': '変数をクリアします。',
+    'wr-break': 'ループを抜けます。',
+    'wr-return': '値を返します。',
+    'wr-error': 'エラーを発生させます。',
+    'wr-conditional': '条件ブロックです。',
+    'wr-cond': 'wr-conditional 内の条件です。',
+    'wr-comment': 'コメントブロック（出力には含まれません）。'
   };
   return docs[tag] || '';
 }

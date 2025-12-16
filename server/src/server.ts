@@ -23,46 +23,46 @@ import {
   Diagnostic as ParserDiagnostic
 } from './parser';
 
-// Create a connection for the server
+// Language Server との接続を作成
 const connection = createConnection(ProposedFeatures.all);
 
-// Create a text document manager
+// テキストドキュメント管理を作成
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-// Tag documentation for hover
+// ホバー用のタグ説明
 const TAG_DOCUMENTATION: Record<string, string> = {
-  'wr-if': '**wr-if** - Conditional rendering\n\nAttributes:\n- `condition`: Expression to evaluate\n\nUsage:\n```html\n<wr-if condition="expression">\n  <wr-then>Content if true</wr-then>\n  <wr-else>Content if false</wr-else>\n</wr-if>\n```',
-  'wr-then': '**wr-then** - Content to render when wr-if condition is true',
-  'wr-else': '**wr-else** - Content to render when wr-if condition is false',
-  'wr-for': '**wr-for** - Loop construct\n\nAttributes:\n- `list`: List element to iterate\n- `string`: String to iterate (character by character)\n- `times`: Number of iterations\n- `variable`: Loop variable name\n- `count`: Total count variable\n- `index`: Index variable name\n\nUsage:\n```html\n<wr-for list="items" variable="item" index="i">\n  %item.name% (index: %i%)\n</wr-for>\n```',
-  'wr-switch': '**wr-switch** - Switch statement\n\nAttributes:\n- `value`: Value to switch on\n\nUsage:\n```html\n<wr-switch value="expression">\n  <wr-case value="1">Case 1</wr-case>\n  <wr-case value="2">Case 2</wr-case>\n  <wr-default>Default case</wr-default>\n</wr-switch>\n```',
-  'wr-case': '**wr-case** - Case within a wr-switch block\n\nAttributes:\n- `value`: Value to match',
-  'wr-default': '**wr-default** - Default case within a wr-switch block',
-  'wr-variable': '**wr-variable** - Define a variable\n\nAttributes:\n- `name`: Variable name\n- `value`: Variable value\n\nUsage:\n```html\n<wr-variable name="myVar" value="expression"></wr-variable>\n```',
-  'wr-append': '**wr-append** - Append value to a variable\n\nAttributes:\n- `name`: Variable name\n- `value`: Value to append',
-  'wr-clear': '**wr-clear** - Clear a variable\n\nAttributes:\n- `name`: Variable name to clear',
-  'wr-break': '**wr-break** - Break out of a loop\n\nAttributes:\n- `condition`: Optional condition for breaking',
-  'wr-return': '**wr-return** - Return a value\n\nAttributes:\n- `value`: Value to return',
-  'wr-error': '**wr-error** - Raise an error\n\nAttributes:\n- `condition`: Condition for error\n- `message`: Error message',
-  'wr-conditional': '**wr-conditional** - Conditional block\n\nAttributes:\n- `condition`: Expression to evaluate',
-  'wr-cond': '**wr-cond** - Condition within wr-conditional\n\nAttributes:\n- `condition`: Expression to evaluate',
-  'wr-comment': '**wr-comment** - Comment block (not rendered in output)'
+  'wr-if': '**wr-if** - 条件分岐（条件付きレンダリング）\n\n属性:\n- `condition`: 評価する式\n\n使用例:\n```html\n<wr-if condition="expression">\n  <wr-then>条件が真のとき</wr-then>\n  <wr-else>条件が偽のとき</wr-else>\n</wr-if>\n```',
+  'wr-then': '**wr-then** - wr-if の条件が真のときに出力する内容',
+  'wr-else': '**wr-else** - wr-if の条件が偽のときに出力する内容',
+  'wr-for': '**wr-for** - ループ（繰り返し）\n\n属性:\n- `list`: 反復するリスト要素\n- `string`: 反復する文字列（1文字ずつ）\n- `times`: 反復回数\n- `variable`: ループ変数名\n- `count`: 総件数を入れる変数名\n- `index`: インデックスを入れる変数名\n\n使用例:\n```html\n<wr-for list="items" variable="item" index="i">\n  %item.name% (index: %i%)\n</wr-for>\n```',
+  'wr-switch': '**wr-switch** - switch 構文（多分岐）\n\n属性:\n- `value`: 分岐の判定に使う値\n\n使用例:\n```html\n<wr-switch value="expression">\n  <wr-case value="1">Case 1</wr-case>\n  <wr-case value="2">Case 2</wr-case>\n  <wr-default>Default case</wr-default>\n</wr-switch>\n```',
+  'wr-case': '**wr-case** - wr-switch 内の case\n\n属性:\n- `value`: 一致させる値',
+  'wr-default': '**wr-default** - wr-switch 内の default（既定）',
+  'wr-variable': '**wr-variable** - 変数を定義\n\n属性:\n- `name`: 変数名\n- `value`: 変数の値\n\n使用例:\n```html\n<wr-variable name="myVar" value="expression"></wr-variable>\n```',
+  'wr-append': '**wr-append** - 変数に値を追記\n\n属性:\n- `name`: 変数名\n- `value`: 追記する値',
+  'wr-clear': '**wr-clear** - 変数をクリア\n\n属性:\n- `name`: クリアする変数名',
+  'wr-break': '**wr-break** - ループを抜ける\n\n属性:\n- `condition`: （任意）break する条件',
+  'wr-return': '**wr-return** - 値を返す\n\n属性:\n- `value`: 返す値',
+  'wr-error': '**wr-error** - エラーを発生させる\n\n属性:\n- `condition`: エラーにする条件\n- `message`: エラーメッセージ',
+  'wr-conditional': '**wr-conditional** - 条件ブロック\n\n属性:\n- `condition`: 評価する式',
+  'wr-cond': '**wr-cond** - wr-conditional 内の条件\n\n属性:\n- `condition`: 評価する式',
+  'wr-comment': '**wr-comment** - コメントブロック（出力には含まれません）'
 };
 
-// Function documentation for hover
+// ホバー用の関数説明
 const FUNCTION_DOCUMENTATION: Record<string, string> = {
-  'selectedValue': '**selectedValue()** - Get the selected value from a select element\n\nReturns the value of the currently selected option.',
-  'selectedName': '**selectedName()** - Get the selected name from a select element\n\nReturns the name/label of the currently selected option.',
-  'selected': '**selected()** - Check if a checkbox or radio button is selected\n\nReturns true if the element is selected.',
-  'isNull': '**isNull(value)** - Check if a value is null\n\nReturns true if the value is null or undefined.',
-  'isNotNull': '**isNotNull(value)** - Check if a value is not null\n\nReturns true if the value is not null.',
-  'length': '**length(value)** - Get the length of a string or array\n\nReturns the number of characters or elements.',
-  'substring': '**substring(str, start, end)** - Extract a substring\n\nReturns a portion of the string.',
-  'contains': '**contains(str, search)** - Check if string contains substring\n\nReturns true if the string contains the search value.',
-  'replace': '**replace(str, search, replacement)** - Replace text in string\n\nReturns the string with replacements made.',
-  'trim': '**trim(str)** - Remove whitespace from both ends\n\nReturns the trimmed string.',
-  'toUpperCase': '**toUpperCase(str)** - Convert to uppercase\n\nReturns the string in uppercase.',
-  'toLowerCase': '**toLowerCase(str)** - Convert to lowercase\n\nReturns the string in lowercase.'
+  'selectedValue': '**selectedValue()** - select 要素の選択値を取得\n\n現在選択されている option の value を返します。',
+  'selectedName': '**selectedName()** - select 要素の表示名を取得\n\n現在選択されている option の名前/ラベルを返します。',
+  'selected': '**selected()** - チェック状態を判定（checkbox / radio）\n\n要素が選択されていれば true を返します。',
+  'isNull': '**isNull(value)** - null 判定\n\nvalue が null または undefined のとき true を返します。',
+  'isNotNull': '**isNotNull(value)** - 非 null 判定\n\nvalue が null でないとき true を返します。',
+  'length': '**length(value)** - 長さを取得（文字列/配列）\n\n文字数または要素数を返します。',
+  'substring': '**substring(str, start, end)** - 部分文字列の抽出\n\n文字列の一部を返します。',
+  'contains': '**contains(str, search)** - 部分一致判定\n\nstr が search を含むとき true を返します。',
+  'replace': '**replace(str, search, replacement)** - 文字列置換\n\n置換後の文字列を返します。',
+  'trim': '**trim(str)** - 前後の空白を削除\n\nトリム後の文字列を返します。',
+  'toUpperCase': '**toUpperCase(str)** - 大文字化\n\n大文字に変換した文字列を返します。',
+  'toLowerCase': '**toLowerCase(str)** - 小文字化\n\n小文字に変換した文字列を返します。'
 };
 
 connection.onInitialize((params: InitializeParams): InitializeResult => {
@@ -78,8 +78,8 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
   };
 });
 
-// Validate document on open and change
-documents.onDidChangeContent(change => {
+// ドキュメントのオープン/変更時に検証
+documents.onDidChangeContent((change: { document: TextDocument }) => {
   validateTextDocument(change.document);
 });
 
@@ -105,7 +105,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
   connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
-// Provide completion items
+// 補完を提供
 connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] => {
   const document = documents.get(params.textDocument.uri);
   if (!document) {
@@ -115,12 +115,12 @@ connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] =
   const text = document.getText();
   const offset = document.offsetAt(params.position);
   
-  // Get text before cursor
+  // カーソル前のテキストを取得
   const textBefore = text.slice(0, offset);
   
-  // Check if we're inside a tag
+  // タグ入力中かどうか
   if (textBefore.match(/<wr-\w*$/)) {
-    // Tag name completion
+    // タグ名の補完
     return TAG_COMPLETIONS.map(item => ({
       label: item.label,
       kind: CompletionItemKind.Keyword,
@@ -129,9 +129,9 @@ connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] =
     }));
   }
   
-  // Check if we're inside an expression
+  // 式（%...%）の途中かどうか
   if (textBefore.match(/%[^%]*$/)) {
-    // Function completion
+    // 関数補完
     return FUNCTION_COMPLETIONS.map(item => ({
       label: item.label,
       kind: CompletionItemKind.Function,
@@ -140,9 +140,9 @@ connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] =
     }));
   }
   
-  // Check if we're after a dot (member access)
+  // ドット直後（メンバーアクセス）かどうか
   if (textBefore.match(/\.\w*$/)) {
-    // Function completion for method calls
+    // メソッド呼び出し向けの補完
     return FUNCTION_COMPLETIONS.map(item => ({
       label: item.label,
       kind: CompletionItemKind.Method,
@@ -154,7 +154,7 @@ connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] =
   return [];
 });
 
-// Provide hover information
+// ホバー情報を提供
 connection.onHover((params: TextDocumentPositionParams): Hover | null => {
   const document = documents.get(params.textDocument.uri);
   if (!document) {
@@ -164,7 +164,7 @@ connection.onHover((params: TextDocumentPositionParams): Hover | null => {
   const text = document.getText();
   const offset = document.offsetAt(params.position);
   
-  // Find the word at the current position
+  // 現在位置の単語範囲を取得
   const wordRange = getWordRangeAtPosition(text, offset);
   if (!wordRange) {
     return null;
@@ -172,7 +172,7 @@ connection.onHover((params: TextDocumentPositionParams): Hover | null => {
   
   const word = text.slice(wordRange.start, wordRange.end);
   
-  // Check if it's a tag
+  // タグかどうか
   if (TAG_DOCUMENTATION[word]) {
     return {
       contents: {
@@ -182,7 +182,7 @@ connection.onHover((params: TextDocumentPositionParams): Hover | null => {
     };
   }
   
-  // Check if it's a function
+  // 関数かどうか
   if (FUNCTION_DOCUMENTATION[word]) {
     return {
       contents: {
@@ -196,16 +196,16 @@ connection.onHover((params: TextDocumentPositionParams): Hover | null => {
 });
 
 function getWordRangeAtPosition(text: string, offset: number): { start: number; end: number } | null {
-  // Find word boundaries
+  // 単語境界を探索
   let start = offset;
   let end = offset;
   
-  // Move start backwards
+  // start を後ろへ
   while (start > 0 && /[\w-]/.test(text[start - 1])) {
     start--;
   }
   
-  // Move end forwards
+  // end を前へ
   while (end < text.length && /[\w-]/.test(text[end])) {
     end++;
   }
@@ -217,8 +217,8 @@ function getWordRangeAtPosition(text: string, offset: number): { start: number; 
   return { start, end };
 }
 
-// Make the text document manager listen on the connection
+// TextDocuments を接続に紐付けて監視開始
 documents.listen(connection);
 
-// Listen on the connection
+// 接続の待ち受け開始
 connection.listen();
