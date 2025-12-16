@@ -121,7 +121,7 @@
         </wr-default>
     </wr-switch>
     <wr-conditional condition="info.selectedName() == 'grpPriceInfo'">
-    aaa
+        aaa
         <wr-cond condition='info.selectedName() == "grpPriceInfo"'>
             <wr-variable name='priceInfo' value='info.selectedValue()'></wr-variable>
             <div class="m-service-category-card__price">
@@ -133,6 +133,9 @@
         <wr-comment>
             test
         </wr-comment>
+        <wr-->
+            test
+        </wr-->
         <wr-cond condition='info.selectedName() == "grpPriceInfo"'>
             <wr-variable name='priceInfo' value='info.selectedValue()'></wr-variable>
             <div class="m-service-category-card__price">
@@ -157,12 +160,33 @@
                     <td>%article.date%</td>
                     <td>%article.title%</td>
                 </tr>
+                <!-- OK: wr-break inside wr-for -->
+                <wr-break condition="i == 3"/>
             </wr-for>
         </tbody>
     </table>
+
+    <!-- OK: wr-break inside wr-if inside wr-for -->
+    <wr-for list="住所" variable="address" count="i">
+        <tr>
+            <td>%address.郵便番号%</td>
+            <td>%address.住所%</td>
+        </tr>
+        <wr-if condition="i == 3">
+            <tr>
+                <td colspan="2">以上 %i% 件です</td>
+            </tr>
+            <wr-break/>
+        </wr-if>
+    </wr-for>
+
+    <!-- ERROR: wr-break outside wr-for -->
+    <wr-break condition="true"/>
     
     <!-- 変数の使用例 -->
     <wr-variable name="total" value="0" />
+    <wr-variable name="total2" value="0">aaa</wr-variable>
+
 
     <p>合計: %total%</p>
     
@@ -182,3 +206,5 @@
     </footer>
 </body>
 </html>
+
+    <wr-break condition="true"/>

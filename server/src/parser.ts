@@ -387,6 +387,9 @@ export class TemplateParser {
     // wr-conditional の直下ネスト制限
     this.validateWrConditionalChildren();
 
+    // wr-break は wr-for の内部でのみ使用可能
+    this.validateWrBreakAncestor();
+
     return this.diagnostics;
   }
 
@@ -987,6 +990,43 @@ export class TemplateParser {
       message,
       code: 'wr-conditional-nesting-error'
     });
+  }
+
+  /**
+   * wr-break は wr-for の内部でのみ使用可能であることを検証する。
+   * 任意のネストの深さで wr-for の祖先があればOK。
+   */
+  private validateWrBreakAncestor(): void {
+    // wr-for の「正しく閉じられた」ブロック範囲だけをスコープとして扱う。
+    // （未閉じタグがあると以降すべてが for の中扱いになり、wr-break の誤検出が起きるため）
+    const forBlocks = this.extractBlocks('wr-for');
+
+    // Find all wr-break tags
+    const breakPattern = /<wr-break\b[^>]*>/g;
+    let breakMatch: RegExpExecArray | null;
+
+    while ((breakMatch = breakPattern.exec(this.content)) !== null) {
+      const breakPos = breakMatch.index;
+      const breakEnd = breakPattern.lastIndex;
+
+      const hasForAncestor = forBlocks.some(
+        b => breakPos >= b.contentStart && breakPos < b.contentEnd
+      );
+
+      if (!hasForAncestor) {
+        const { line: startLine, character: startChar } = this.getLineColumn(breakPos);
+        const { line: endLine, character: endChar } = this.getLineColumn(breakEnd);
+        this.diagnostics.push({
+          range: {
+            start: { line: startLine, character: startChar },
+            end: { line: endLine, character: endChar }
+          },
+          severity: 1,
+          message: 'wr-break は wr-for の内部でのみ使用できます',
+          code: 'wr-break-outside-for'
+        });
+      }
+    }
   }
 
   private getLineColumn(pos: number): { line: number; character: number } {
