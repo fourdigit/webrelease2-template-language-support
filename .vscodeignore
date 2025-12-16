@@ -1,6 +1,7 @@
 .vscode/**
 .vscode-test/**
 .github/**
+.cursor/**
 
 client/src/**
 server/src/**
@@ -11,7 +12,11 @@ server/src/**
 **/*.map
 **/*.ts
 
-client/server/**
+client/node_modules/**
+server/node_modules/**
+
+**/package-lock.json
+**/.gitignore
 
 
 
