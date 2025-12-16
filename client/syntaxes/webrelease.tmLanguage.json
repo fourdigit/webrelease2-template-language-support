@@ -4,142 +4,214 @@
   "scopeName": "text.html.webrelease",
   "patterns": [
     {
-      "include": "#comments"
+      "include": "#wr-comments"
     },
     {
-      "include": "#expressions"
+      "include": "#wr-tags"
     },
     {
-      "include": "#tags"
+      "include": "#wr-expressions"
     },
     {
-      "include": "#html"
+      "include": "text.html.basic"
     }
   ],
   "repository": {
-    "comments": {
+    "wr-comments": {
       "patterns": [
         {
           "name": "comment.block.webrelease",
           "begin": "<wr-comment>",
-          "end": "</wr-comment>"
+          "end": "</wr-comment>",
+          "contentName": "comment.block.webrelease"
         }
       ]
     },
-    "expressions": {
+    "wr-expressions": {
       "patterns": [
         {
           "name": "meta.expression.webrelease",
-          "begin": "%",
+          "begin": "%(?!%)",
           "end": "%",
-          "patterns": [
-            {
-              "name": "keyword.operator.webrelease",
-              "match": "(==|!=|<=|>=|<|>|&&|\\|\\||!|\\+|-|\\*|/|%)"
-            },
-            {
-              "name": "support.function.webrelease",
-              "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale)\\b"
-            },
-            {
-              "name": "variable.other.webrelease",
-              "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
-            },
-            {
-              "name": "string.quoted.double.webrelease",
-              "begin": "\"",
-              "end": "\"",
-              "patterns": [
-                {
-                  "name": "constant.character.escape.webrelease",
-                  "match": "\\\\."
-                }
-              ]
-            },
-            {
-              "name": "constant.numeric.webrelease",
-              "match": "\\b\\d+(\\.\\d+)?\\b"
-            },
-            {
-              "name": "punctuation.webrelease",
-              "match": "[\\[\\]().,]"
-            }
-          ]
-        }
-      ]
-    },
-    "tags": {
-      "patterns": [
-        {
-          "name": "meta.tag.webrelease",
-          "begin": "<(wr-(?:if|then|else|switch|case|default|for|break|variable|append|clear|return|error|conditional|cond|comment))(?:\\s|>)",
           "beginCaptures": {
-            "1": {
-              "name": "entity.name.tag.webrelease"
+            "0": {
+              "name": "punctuation.definition.expression.begin.webrelease"
             }
           },
-          "end": ">",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.expression.end.webrelease"
+            }
+          },
+          "contentName": "meta.embedded.expression.webrelease",
           "patterns": [
             {
-              "include": "#tag-attributes"
+              "include": "#expression-contents"
             }
           ]
-        },
-        {
-          "name": "meta.tag.webrelease.close",
-          "match": "</(wr-(?:if|then|else|switch|case|default|for|break|variable|append|clear|return|error|conditional|cond|comment))>",
-          "captures": {
-            "1": {
-              "name": "entity.name.tag.webrelease"
-            }
-          }
         }
       ]
     },
-    "tag-attributes": {
+    "expression-contents": {
       "patterns": [
         {
-          "name": "entity.other.attribute-name.webrelease",
-          "match": "\\b(condition|list|string|times|variable|count|index|value|name|message)\\b"
+          "name": "keyword.operator.comparison.webrelease",
+          "match": "==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.logical.webrelease",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.arithmetic.webrelease",
+          "match": "\\+|-|\\*|/"
+        },
+        {
+          "name": "support.function.webrelease",
+          "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale|selectedValue|selectedName|selected|unsplit|generatePrice|generateBenefit|generateBakuage)\\b"
         },
         {
           "name": "string.quoted.double.webrelease",
           "begin": "\"",
           "end": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.webrelease"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.webrelease"
+            }
+          },
           "patterns": [
             {
               "name": "constant.character.escape.webrelease",
               "match": "\\\\."
             }
           ]
+        },
+        {
+          "name": "constant.numeric.webrelease",
+          "match": "\\b\\d+(\\.\\d+)?\\b"
+        },
+        {
+          "name": "punctuation.accessor.webrelease",
+          "match": "\\."
+        },
+        {
+          "name": "punctuation.bracket.webrelease",
+          "match": "[\\[\\]()]"
+        },
+        {
+          "name": "punctuation.separator.webrelease",
+          "match": ","
+        },
+        {
+          "name": "variable.other.webrelease",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
         }
       ]
     },
-    "html": {
+    "wr-tags": {
       "patterns": [
         {
-          "name": "comment.block.html",
-          "begin": "<!--",
-          "end": "-->"
-        },
-        {
-          "name": "meta.tag.html",
-          "begin": "<(?!wr-)/?(?:[a-zA-Z][a-zA-Z0-9]*)?",
-          "end": ">",
+          "name": "meta.tag.webrelease",
+          "begin": "(<)(wr-(?:if|then|else|switch|case|default|for|break|variable|append|clear|return|error|conditional|cond|comment))\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.webrelease"
+            },
+            "2": {
+              "name": "entity.name.tag.webrelease"
+            }
+          },
+          "end": "/?>",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.tag.end.webrelease"
+            }
+          },
           "patterns": [
             {
-              "name": "entity.other.attribute-name.html",
-              "match": "[a-zA-Z][a-zA-Z0-9-]*"
+              "include": "#wr-tag-attributes"
+            }
+          ]
+        },
+        {
+          "name": "meta.tag.webrelease.close",
+          "match": "(</)(wr-(?:if|then|else|switch|case|default|for|break|variable|append|clear|return|error|conditional|cond|comment))(>)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.webrelease"
+            },
+            "2": {
+              "name": "entity.name.tag.webrelease"
+            },
+            "3": {
+              "name": "punctuation.definition.tag.end.webrelease"
+            }
+          }
+        }
+      ]
+    },
+    "wr-tag-attributes": {
+      "patterns": [
+        {
+          "name": "entity.other.attribute-name.webrelease",
+          "match": "\\b(condition|list|string|times|variable|count|index|value|name|message)\\b"
+        },
+        {
+          "begin": "(=)\\s*(')",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.separator.key-value.webrelease"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.webrelease"
+            }
+          },
+          "end": "'",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.webrelease"
+            }
+          },
+          "contentName": "string.quoted.single.webrelease",
+          "patterns": [
+            {
+              "include": "#wr-expressions"
             },
             {
-              "name": "string.quoted.double.html",
-              "begin": "\"",
-              "end": "\"",
-              "patterns": [
-                {
-                  "include": "#expressions"
-                }
-              ]
+              "name": "constant.character.escape.webrelease",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "begin": "(=)\\s*(\")",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.separator.key-value.webrelease"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.webrelease"
+            }
+          },
+          "end": "\"",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.webrelease"
+            }
+          },
+          "contentName": "string.quoted.double.webrelease",
+          "patterns": [
+            {
+              "include": "#wr-expressions"
+            },
+            {
+              "name": "constant.character.escape.webrelease",
+              "match": "\\\\."
             }
           ]
         }

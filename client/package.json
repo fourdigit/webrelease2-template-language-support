@@ -2,7 +2,7 @@
   "name": "webrelease-template-lsp",
   "displayName": "WebRelease Template Language Support",
   "description": "Language support for WebRelease template language with syntax highlighting, validation, and code completion",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "fourdigit",
   "license": "MIT",
   "repository": {
@@ -20,7 +20,8 @@
     "webrelease",
     "template",
     "language",
-    "lsp"
+    "lsp",
+    "html"
   ],
   "activationEvents": [
     "onLanguage:webrelease"
@@ -45,7 +46,20 @@
       {
         "language": "webrelease",
         "scopeName": "text.html.webrelease",
-        "path": "./syntaxes/webrelease.tmLanguage.json"
+        "path": "./syntaxes/webrelease.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.css": "css",
+          "source.js": "javascript",
+          "source.json": "json"
+        }
+      },
+      {
+        "scopeName": "text.html.webrelease.injection",
+        "path": "./syntaxes/webrelease-injection.tmLanguage.json",
+        "injectTo": [
+          "text.html",
+          "source.json"
+        ]
       }
     ],
     "configuration": {

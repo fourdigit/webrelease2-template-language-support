@@ -1,0 +1,99 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "WebRelease Expression Injection",
+  "scopeName": "text.html.webrelease.injection",
+  "injectionSelector": "L:text.html, L:source.json, L:string",
+  "patterns": [
+    {
+      "include": "#wr-expressions"
+    }
+  ],
+  "repository": {
+    "wr-expressions": {
+      "patterns": [
+        {
+          "name": "meta.expression.webrelease",
+          "begin": "%(?!%)",
+          "end": "%",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.expression.begin.webrelease"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.expression.end.webrelease"
+            }
+          },
+          "contentName": "meta.embedded.expression.webrelease",
+          "patterns": [
+            {
+              "include": "#expression-contents"
+            }
+          ]
+        }
+      ]
+    },
+    "expression-contents": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.webrelease",
+          "match": "==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.logical.webrelease",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.arithmetic.webrelease",
+          "match": "\\+|-|\\*|/"
+        },
+        {
+          "name": "support.function.webrelease",
+          "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale|selectedValue|selectedName|selected|unsplit|generatePrice|generateBenefit|generateBakuage)\\b"
+        },
+        {
+          "name": "string.quoted.double.webrelease",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.webrelease"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.webrelease"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.webrelease",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "constant.numeric.webrelease",
+          "match": "\\b\\d+(\\.\\d+)?\\b"
+        },
+        {
+          "name": "punctuation.accessor.webrelease",
+          "match": "\\."
+        },
+        {
+          "name": "punctuation.bracket.webrelease",
+          "match": "[\\[\\]()]"
+        },
+        {
+          "name": "punctuation.separator.webrelease",
+          "match": ","
+        },
+        {
+          "name": "variable.other.webrelease",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}
