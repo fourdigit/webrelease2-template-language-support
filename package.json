@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fourdigit/webrelease-template-language-support"
+    "url": "https://github.com/fourdigit/webrelease2-template-language-support"
   },
   "engines": {
     "vscode": "^1.75.0"

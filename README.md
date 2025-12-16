@@ -56,7 +56,7 @@ Documentation on hover for:
 
 ### From VSIX File
 
-1. Download the `.vsix` file from the [Releases](https://github.com/fourdigit/webrelease-template-language-support/releases) page
+1. Download the `.vsix` file from the [Releases](https://github.com/fourdigit/webrelease2-template-language-support/releases) page
 2. Open VS Code
 3. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
 4. Type `Extensions: Install from VSIX...`
@@ -187,4 +187,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Links
 
 - [WebRelease Documentation](https://www.frameworks.co.jp/support/manual/2.8/nkus7r000001ybbg.html)
-- [GitHub Repository](https://github.com/fourdigit/webrelease-template-language-support)
+- [GitHub Repository](https://github.com/fourdigit/webrelease2-template-language-support)
