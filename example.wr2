@@ -184,9 +184,63 @@
     <wr-break condition="true"/>
     
     <!-- 変数の使用例 -->
+    <!-- wr-variable OK -->
     <wr-variable name="total" value="0" />
-    <wr-variable name="total2" value="0">aaa</wr-variable>
+    <wr-variable name="onlyName" />
+    <wr-variable name="emptyBody"></wr-variable>
+    <wr-variable name="bodyValue">
+        ここに記述された展開の評価結果が変数の値になります。
+        <wr-for list="articles" variable="article">
+            %pageTitle(article)%<br />
+        </wr-for>
+    </wr-variable>
 
+    <!-- wr-variable NG -->
+    <wr-variable />
+    <wr-variable name="conflict" value="0">aaa</wr-variable>
+
+    <!-- wr-append OK -->
+    <wr-append name="log" value="start" />
+    <wr-append name="log">
+        追記する値は本文でも定義できます。
+        %pageTitle()%<br />
+    </wr-append>
+
+    <!-- wr-append NG -->
+    <wr-append value="x"/>
+    <wr-append name="conflictAppend" value="1">body</wr-append>
+
+    <!-- 必須属性チェック OK -->
+    <wr-clear name="total" />
+    <wr-return value="%total%" />
+    <wr-if condition="true">
+        <wr-then>OK</wr-then>
+    </wr-if>
+    <wr-conditional>
+        <wr-cond condition="true">OK</wr-cond>
+    </wr-conditional>
+    <wr-switch value="x">
+        <wr-case value="x">OK</wr-case>
+        <wr-default>OK</wr-default>
+    </wr-switch>
+    <wr-for list="articles" variable="article"></wr-for>
+
+    <!-- 必須属性チェック NG -->
+    <wr-clear />
+    <wr-return />
+    <wr-if>
+        <wr-then>NG</wr-then>
+    </wr-if>
+    <wr-conditional>
+        <wr-cond>NG</wr-cond>
+    </wr-conditional>
+    <wr-switch>
+        <wr-case value="x">NG</wr-case>
+    </wr-switch>
+    <wr-switch value="x">
+        <wr-case>NG</wr-case>
+    </wr-switch>
+    <wr-for list="articles"></wr-for>
 
     <p>合計: %total%</p>
     
@@ -206,5 +260,3 @@
     </footer>
 </body>
 </html>
-
-    <wr-break condition="true"/>

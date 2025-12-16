@@ -68,7 +68,7 @@ const TAG_ATTRIBUTES: Record<string, string[]> = {
 const NO_CLOSE_TAGS = new Set([
   'wr-then', 'wr-else', 'wr-case', 'wr-default',
   'wr-variable', 'wr-append', 'wr-clear', 'wr-break',
-  'wr-return', 'wr-error'
+  'wr-return'
 ]);
 
 // HTML の void 要素（self-closing として扱う）
@@ -375,6 +375,12 @@ export class TemplateParser {
     // タグの検証
     this.validateTags();
 
+    // wr-variable の厳格な文法検証
+    this.validateWrVariableSyntax();
+
+    // wr-append の厳格な文法検証（wr-variable と同様の制約）
+    this.validateWrAppendSyntax();
+
     // 閉じタグの検証
     this.validateTagClosures();
 
@@ -402,7 +408,8 @@ export class TemplateParser {
   }
 
   private collectListElements(): void {
-    const pattern = /<wr-for\s+([^>]*)>/g;
+    // '>' がクォート内に含まれても壊れないようにする
+    const pattern = /<wr-for\b((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
     let match;
 
     while ((match = pattern.exec(this.content)) !== null) {
@@ -474,13 +481,15 @@ export class TemplateParser {
   }
 
   private validateTags(): void {
-    const pattern = /<(wr-[a-zA-Z0-9-]+)([^>]*)>/g;
+    // '>' がクォート内に含まれても壊れないようにする（例: condition="a > b"）
+    const pattern = /<(wr-[a-zA-Z0-9-]+)((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
     let match;
 
     while ((match = pattern.exec(this.content)) !== null) {
       const tagName = match[1];
       const attributesStr = match[2];
       const startPos = match.index;
+      const endPos = pattern.lastIndex;
 
       if (!VALID_TAGS.has(tagName)) {
         const { line, character } = this.getLineColumn(startPos);
@@ -498,6 +507,63 @@ export class TemplateParser {
 
       // 属性の検証
       this.validateTagAttributes(tagName, attributesStr, startPos);
+
+      // 必須属性の検証（タグごとのルール）
+      this.validateRequiredAttributes(tagName, attributesStr, startPos, endPos);
+    }
+  }
+
+  private parseAttributes(attributesStr: string): Map<string, string> {
+    // シングル/ダブルクォート両方の属性に対応
+    const attrPattern = /(\w+)='([^']*)'|(\w+)="([^"]*)"/g;
+    const attrs = new Map<string, string>();
+    let match: RegExpExecArray | null;
+    while ((match = attrPattern.exec(attributesStr)) !== null) {
+      const attrName = (match[1] || match[3] || '').toLowerCase();
+      const attrValue = match[2] ?? match[4] ?? '';
+      if (attrName) {
+        attrs.set(attrName, attrValue);
+      }
+    }
+    return attrs;
+  }
+
+  private validateRequiredAttributes(
+    tagName: string,
+    attributesStr: string,
+    startPos: number,
+    endPos: number
+  ): void {
+    const requiredByTag: Record<string, string> = {
+      'wr-variable': 'name',
+      'wr-append': 'name',
+      'wr-clear': 'name',
+      'wr-return': 'value',
+      'wr-if': 'condition',
+      'wr-cond': 'condition',
+      'wr-switch': 'value',
+      'wr-case': 'value',
+      'wr-for': 'variable'
+    };
+
+    const required = requiredByTag[tagName];
+    if (!required) return;
+
+    const attrs = this.parseAttributes(attributesStr);
+    const value = attrs.get(required);
+    const ok = value !== undefined && value.trim().length > 0;
+    if (!ok) {
+      const { line: startLine, character: startChar } = this.getLineColumn(startPos);
+      const { line: endLine, character: endChar } = this.getLineColumn(endPos);
+      this.diagnostics.push({
+        range: {
+          start: { line: startLine, character: startChar },
+          end: { line: endLine, character: endChar }
+        },
+        severity: 1,
+        message: `${tagName} は ${required} 属性が必須です`,
+        code: `${tagName}-missing-${required}`
+      });
     }
   }
 
@@ -832,10 +898,140 @@ export class TemplateParser {
   }
 
   /**
+   * wr-variable / wr-append の共通: name 必須 + value と本文の併用禁止 を検証する。
+   * 本文（子要素/テキスト）が空白のみの場合は「本文なし」とみなす。
+   *
+   * NOTE:
+   * - validateTagClosures は NO_CLOSE_TAGS を「閉じタグ不要」として扱うため、
+   *   ここで unmatched closing / unclosed も検出する。
+   */
+  private validateWrNameValueBodyTagSyntax(tagName: 'wr-variable' | 'wr-append'): void {
+    // '>' がクォート内に含まれても壊れないようにする
+    const tagBody = String.raw`(?:[^>"']|"[^"]*"|'[^']*')*`;
+    const escapedTagName = tagName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const tagRegex = new RegExp(
+      String.raw`<\s*\/?\s*${escapedTagName}(?=[\s/>])${tagBody}\s*\/?>`,
+      'g'
+    );
+
+    const stack: Array<{
+      openStart: number;
+      openEnd: number;
+      hasValueAttr: boolean;
+    }> = [];
+
+    let match: RegExpExecArray | null;
+    while ((match = tagRegex.exec(this.content)) !== null) {
+      const fullTag = match[0];
+      const tagStart = match.index;
+      const tagEnd = tagRegex.lastIndex;
+      const isClosing = /^<\s*\//.test(fullTag);
+
+      if (isClosing) {
+        if (stack.length === 0) {
+          const { line: startLine, character: startChar } = this.getLineColumn(tagStart);
+          const { line: endLine, character: endChar } = this.getLineColumn(tagEnd);
+          this.diagnostics.push({
+            range: {
+              start: { line: startLine, character: startChar },
+              end: { line: endLine, character: endChar }
+            },
+            severity: 1,
+            message: `閉じタグ '${tagName}' に対応する開始タグがありません`,
+            code: `${tagName}-unmatched-closing`
+          });
+          continue;
+        }
+
+        const open = stack.pop()!;
+        if (open.hasValueAttr) {
+          const body = this.content.slice(open.openEnd, tagStart);
+          if (body.trim().length > 0) {
+            const { line: startLine, character: startChar } = this.getLineColumn(open.openStart);
+            const { line: endLine, character: endChar } = this.getLineColumn(open.openEnd);
+            this.diagnostics.push({
+              range: {
+                start: { line: startLine, character: startChar },
+                end: { line: endLine, character: endChar }
+              },
+              severity: 1,
+              message: `${tagName} は value 属性と本文（子要素/テキスト）を併用できません`,
+              code: `${tagName}-value-body-conflict`
+            });
+          }
+        }
+
+        continue;
+      }
+
+      // opening tag
+      const selfClosing = /\/\s*>$/.test(fullTag);
+
+      // Extract attributes from the tag
+      const attributesStr = fullTag
+        .replace(new RegExp(`^<\\s*${tagName}\\b`, 'i'), '')
+        .replace(/>\s*$/, '');
+
+      const attrs = this.parseAttributes(attributesStr);
+      const hasValueAttr = attrs.has('value');
+
+      if (!selfClosing) {
+        stack.push({ openStart: tagStart, openEnd: tagEnd, hasValueAttr });
+      }
+    }
+
+    // 未閉じの開始タグ
+    for (const open of stack) {
+      const { line: startLine, character: startChar } = this.getLineColumn(open.openStart);
+      const { line: endLine, character: endChar } = this.getLineColumn(open.openEnd);
+      this.diagnostics.push({
+        range: {
+          start: { line: startLine, character: startChar },
+          end: { line: endLine, character: endChar }
+        },
+        severity: 1,
+        message: `タグ '${tagName}' が閉じられていません（自己終了する場合は '/>' を使用してください）`,
+        code: `${tagName}-unclosed`
+      });
+    }
+  }
+
+  /**
+   * wr-variable の文法を厳格に検証する。
+   *
+   * 許可:
+   * (1) <wr-variable name="変数名" ></wr-variable>
+   * (2) <wr-variable name="変数名"/>
+   * (3) <wr-variable name="変数名" value="値"></wr-variable>
+   * (4) <wr-variable name="変数名" value="値"/>
+   * (5) <wr-variable name="変数名">..値..</wr-variable>（本文は任意のテンプレート展開を含めてよい）
+   *
+   * 制限:
+   * - name なしは不可
+   * - value 属性と本文（子要素/テキスト）の両立は不可（本文が空白のみなら可）
+   */
+  private validateWrVariableSyntax(): void {
+    this.validateWrNameValueBodyTagSyntax('wr-variable');
+  }
+
+  /**
+   * wr-append の文法を厳格に検証する（wr-variable と同じ制約）。
+   */
+  private validateWrAppendSyntax(): void {
+    this.validateWrNameValueBodyTagSyntax('wr-append');
+  }
+
+  /**
    * 指定タグの開始/終了を対応付け、内容範囲を返す。
    */
   private extractBlocks(tagName: string): Array<{ contentStart: number; contentEnd: number }> {
-    const regex = new RegExp(`<\\s*(/?)\\s*${tagName}\\b[^>]*?>`, 'g');
+    // '>' がクォート内に含まれても壊れないようにする
+    const tagBody = String.raw`(?:[^>"']|"[^"]*"|'[^']*')*`;
+    const escapedTagName = tagName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(
+      String.raw`<\s*(/?)\s*${escapedTagName}(?=[\s/>])${tagBody}\s*\/?>`,
+      'g'
+    );
     const stack: Array<{ contentStart: number }> = [];
     const blocks: Array<{ contentStart: number; contentEnd: number }> = [];
     let match: RegExpExecArray | null;
@@ -877,7 +1073,8 @@ export class TemplateParser {
     > = [];
 
     // \b だと末尾が '-' のタグ（wr--）で境界にならないため、次が空白 or /> で区切る
-    const tagRegex = /<\s*\/?\s*([a-zA-Z0-9-]+)(?=[\s/>])[^>]*?>/g;
+    // '>' がクォート内に含まれても壊れないようにする
+    const tagRegex = /<\s*\/?\s*([a-zA-Z0-9-]+)(?=[\s/>])(?:[^>"']|"[^"]*"|'[^']*')*?>/g;
     tagRegex.lastIndex = start;
 
     let depth = 0;
@@ -914,6 +1111,10 @@ export class TemplateParser {
         tagName === 'wr-case' ||
         tagName === 'wr-default' ||
         tagName === 'wr-cond' ||
+        // wr-variable は閉じタグ付きで本文を持てるため、コンテナとして扱う（自己終了は除外）
+        (tagName === 'wr-variable' && !fullTag.endsWith('/>')) ||
+        // wr-append も閉じタグ付きで本文を持てるため、コンテナとして扱う（自己終了は除外）
+        (tagName === 'wr-append' && !fullTag.endsWith('/>')) ||
         (!NO_CLOSE_TAGS.has(tagName) && !this.isVoidHtmlTag(tagName) && !fullTag.endsWith('/>'));
 
       if (!isClosing) {
