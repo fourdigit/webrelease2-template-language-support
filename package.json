@@ -2,7 +2,7 @@
   "name": "webrelease2-template-lsp",
   "displayName": "WebRelease2 Template Language Support",
   "description": "Language support for WebRelease2 template language with syntax highlighting, validation, and code completion",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "publisher": "fourdigit",
   "license": "MIT",
   "repository": {
@@ -38,7 +38,7 @@
         ],
         "extensions": [
           ".wr2",
-          ".wrt"
+          ".wr2t"
         ],
         "configuration": "./client/language-configuration.json"
       }

@@ -1,7 +1,7 @@
 {
   "name": "webrelease2-template-lsp-client",
   "description": "Client (VS Code extension) code for WebRelease2 Template LSP",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "private": true,
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

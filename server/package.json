@@ -1,6 +1,6 @@
 {
   "name": "webrelease2-template-lsp-server",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "Language Server for WebRelease2 Template",
   "main": "out/server.js",
   "private": true,

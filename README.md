@@ -1,150 +1,117 @@
 # WebRelease2 Template Language Support
 
-VS Code extension providing language support for WebRelease2 template language with syntax highlighting, validation, and code completion.
+VS Code 向けの WebRelease2 テンプレート言語サポート拡張機能です。`.wr2` / `.wr2t` を対象に、構文ハイライト、入力補助、静的な構文チェックを提供します。
 
-**No external dependencies required** - Just install the extension and start using it!
+- 外部ランタイムの追加インストールは不要です（拡張機能に LSP サーバーを同梱しています）。
 
-## Features
+## 機能
 
-### Syntax Highlighting
+### 構文ハイライト
 
-Full syntax highlighting for WebRelease2 template files including:
-- Expression highlighting (`%...%`)
-- Tag highlighting (`<wr-*>`)
-- Comment highlighting
-- Attribute highlighting
+TextMate Grammar によるハイライトを提供します。
 
-### Validation
+- `%...%`（テンプレート式）
+- `<wr-*>`（WebRelease2 拡張タグ）
+- コメント
+- 属性
+- HTML / CSS / JavaScript / JSON の埋め込み（基本）
 
-Real-time syntax checking and error detection:
-- Expression syntax validation
-- Tag validation
-- Attribute validation
-- Tag closure validation
-- **List element function call validation**
+### 入力補助（補完）
 
-### List Element Validation
+- **タグ補完**: `<wr-` から `wr-if` / `wr-for` などを補完
+- **関数補完**:
+  - `%...%` の内側で組み込み関数を補完
+  - `wr-*` の一部属性値（例: `condition` / `value` / `list` など）入力中にも関数補完
+- **HTML 補完**: 通常の HTML 編集時は HTML の補完もフォールバックで動作
 
-The extension detects when `selectedValue()`, `selectedName()`, or `selected()` functions are incorrectly called on list elements:
+### ホバー（Hover）
+
+- **タグ**: `wr-if` などにホバーで簡易ドキュメント表示
+- **関数**: 一部の関数はホバーで簡易説明を表示
+- **HTML**: 通常の HTML 部分は HTML のホバー情報にフォールバック
+
+### 検証（Diagnostics）
+
+保存不要で、編集中にエラー/警告を表示します（静的解析ベース）。
+
+- **テンプレート式 `%...%` の構文チェック**
+- **タグ検証**: 不明な `wr-*` タグを検出
+- **属性検証**: タグごとに許可されない属性を警告
+- **必須属性の検証**（例: `wr-if` の `condition`、`wr-variable` の `name` など）
+- **閉じタグの整合**（未閉じ/対応しない閉じタグの検出）
+- **`wr-variable` / `wr-append` の文法チェック**
+  - `name` 必須
+  - `value` 属性と本文（子要素/テキスト）の併用禁止（本文が空白のみは許可）
+- **`wr-if` / `wr-switch` / `wr-conditional` の直下要素制約**
+  - `wr-if` が `wr-then` / `wr-else` を使う場合の配置制約
+  - `wr-switch` 直下は `wr-case` / `wr-default` のみ（`wr-default` は最大1つ、かつ最後）
+  - `wr-conditional` 直下は `wr-cond` のみ
+- **`wr-break` の使用位置**: `wr-for` の内部でのみ使用可能
+- **リスト要素に対する関数呼び出し検出**
+  - `selectedValue()` / `selectedName()` / `selected()` をリスト要素に直接呼ぶ誤りを検出
+
+例（リスト要素に対する誤った呼び出し）:
 
 ```html
-<!-- ❌ Error: Cannot call 'selectedValue()' on list element -->
+<!-- ❌ NG: list 属性で回している要素に対して直接 selectedValue() を呼んでいる -->
 <wr-for list='card.selectPriceInfo' variable="info">
-    %card.selectPriceInfo.selectedValue().txtHtml%
+  %card.selectPriceInfo.selectedValue().txtHtml%
 </wr-for>
 
-<!-- ✓ Correct: Use loop variable instead -->
+<!-- ✅ OK: ループ変数（info）に対して呼び出す -->
 <wr-for list='card.selectPriceInfo' variable="info">
-    %info.selectedValue().txtHtml%
+  %info.selectedValue().txtHtml%
 </wr-for>
 ```
 
-### Code Completion
-
-Intelligent completion for:
-- Tags (`<wr-if`, `<wr-for`, etc.)
-- Attributes (`condition=`, `list=`, `variable=`, etc.)
-- Functions (`pageTitle()`, `isNotNull()`, etc.)
-
-### Hover Information
-
-Documentation on hover for:
-- Tags
-- Functions
-
-## Installation
-
-### From VSIX File
-
-1. Download the `.vsix` file from the [Releases](https://github.com/fourdigit/webrelease2-template-language-support/releases) page
-2. Open VS Code
-3. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-4. Type `Extensions: Install from VSIX...`
-5. Select the downloaded `.vsix` file
-
-### From Command Line
-
-```bash
-code --install-extension webrelease2-template-lsp-0.6.0.vsix
-```
-
-## Supported File Extensions
+## 対応ファイル拡張子
 
 - `.wr2`
-- `.wrt`
+- `.wr2t`
 
-## Supported Tags
+## 対応タグ（補完/検証の対象）
 
-| Tag | Description |
-|-----|-------------|
-| `wr-if` | Conditional rendering |
-| `wr-then` | Content when condition is true |
-| `wr-else` | Content when condition is false |
-| `wr-for` | Loop construct |
-| `wr-switch` | Switch statement |
-| `wr-case` | Case within switch |
-| `wr-default` | Default case |
-| `wr-variable` | Define a variable |
-| `wr-append` | Append to a variable |
-| `wr-clear` | Clear a variable |
-| `wr-break` | Break from loop |
-| `wr-return` | Return a value |
-| `wr-error` | Raise an error |
-| `wr-conditional` | Conditional block |
-| `wr-cond` | Condition within conditional |
-| `wr-comment` | Comment block |
+- `wr-if`, `wr-then`, `wr-else`
+- `wr-for`, `wr-break`
+- `wr-switch`, `wr-case`, `wr-default`
+- `wr-variable`, `wr-append`, `wr-clear`
+- `wr-return`, `wr-error`
+- `wr-conditional`, `wr-cond`
+- `wr-comment`, `wr--`（コメント）
 
-## Supported Functions
+## 対応関数（補完/検証の対象）
 
-### Selection Functions
-- `selectedValue()` - Get selected value from select element
-- `selectedName()` - Get selected name from select element
-- `selected()` - Check if checkbox/radio is selected
+補完の対象になっている主な関数は以下です（実装上の組み込み関数一覧）。
 
-### Null Check Functions
-- `isNull(value)` - Check if value is null
-- `isNotNull(value)` - Check if value is not null
-- `isNumber(value)` - Check if value is a number
+- **選択系**: `selectedValue()`, `selectedName()`, `selected()`
+- **Null/型判定**: `isNull(value)`, `isNotNull(value)`, `isNumber(value)`
+- **変換**: `number(value)`, `string(value)`
+- **文字列/配列**: `length(value)`, `substring(str, start, end)`, `indexOf(str, substr)`, `contains(str, substr)`, `startsWith(str, prefix)`, `endsWith(str, suffix)`, `toUpperCase(str)`, `toLowerCase(str)`, `trim(str)`, `replace(str, from, to)`, `split(str, delimiter)`, `join(array, delimiter)`, `unsplit(...)`
+- **数値**: `round(num)`, `floor(num)`, `ceil(num)`, `abs(num)`, `min(a, b)`, `max(a, b)`, `divide(a, b, scale, mode)`, `setScale(num, scale)`
+- **その他**: `pageTitle()`, `currentTime()`, `formatDate(time, format)`, `generatePrice(...)`, `generateBenefit(...)`, `generateBakuage(...)`
 
-### String Functions
-- `length(str)` - Get string/array length
-- `substring(str, start, end)` - Extract substring
-- `indexOf(str, substr)` - Find substring position
-- `contains(str, substr)` - Check if string contains substring
-- `startsWith(str, prefix)` - Check if string starts with prefix
-- `endsWith(str, suffix)` - Check if string ends with suffix
-- `toUpperCase(str)` - Convert to uppercase
-- `toLowerCase(str)` - Convert to lowercase
-- `trim(str)` - Remove whitespace
-- `replace(str, from, to)` - Replace text
-- `split(str, delimiter)` - Split string
-- `join(array, delimiter)` - Join array
+## インストール
 
-### Math Functions
-- `round(num)` - Round number
-- `floor(num)` - Floor function
-- `ceil(num)` - Ceiling function
-- `abs(num)` - Absolute value
-- `min(a, b)` - Minimum value
-- `max(a, b)` - Maximum value
-- `divide(a, b, scale, mode)` - Division
-- `setScale(num, scale)` - Set decimal places
+### VSIX からインストール
 
-### Other Functions
-- `pageTitle()` - Get page title
-- `currentTime()` - Get current time
-- `formatDate(time, format)` - Format date
-- `number(value)` - Convert to number
-- `string(value)` - Convert to string
+1. [Releases](https://github.com/fourdigit/webrelease2-template-language-support/releases) から `.vsix` をダウンロード
+2. VS Code で `Extensions: Install from VSIX...` を実行
+3. ダウンロードした `.vsix` を選択
 
-## Development
+### コマンドライン
 
-### Prerequisites
+```bash
+code --install-extension webrelease2-template-lsp-0.9.0.vsix
+```
+
+## 開発
+
+### 前提
 
 - Node.js 18+
 - npm
 
-### Build
+### ビルド / パッケージング
 
 ```bash
 # Install dependencies
@@ -159,7 +126,7 @@ cd ../client && npm run compile
 cd client && npx vsce package
 ```
 
-### Project Structure
+### 構成
 
 ```
 webrelease-template-language-support/
@@ -176,15 +143,15 @@ webrelease-template-language-support/
 └── README.md
 ```
 
-## License
+## ライセンス
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - 詳細は [LICENSE](LICENSE) を参照してください。
 
-## Contributing
+## コントリビュート
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Pull Request を歓迎します。
 
-## Links
+## リンク
 
-- [WebRelease Documentation](https://www.frameworks.co.jp/support/manual/2.8/nkus7r000001ybbg.html)
-- [GitHub Repository](https://github.com/fourdigit/webrelease2-template-language-support)
+- [WebRelease マニュアル（テンプレート構文）](https://www.frameworks.co.jp/support/manual/2.8/nkus7r000001ybbg.html)
+- [GitHub リポジトリ](https://github.com/fourdigit/webrelease2-template-language-support)

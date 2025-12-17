@@ -41,11 +41,11 @@ export function activate(context: ExtensionContext) {
         documentSelector: [
             { scheme: 'file', language: 'webrelease2' },
             { scheme: 'file', pattern: '**/*.wr2' },
-            { scheme: 'file', pattern: '**/*.wrt' }
+            { scheme: 'file', pattern: '**/*.wr2t' }
         ],
         synchronize: {
             // Notify the server about file changes
-            fileEvents: workspace.createFileSystemWatcher('**/*.{wr2,wrt}')
+            fileEvents: workspace.createFileSystemWatcher('**/*.{wr2,wr2t}')
         },
         outputChannel: outputChannel,
     };
