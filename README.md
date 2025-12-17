@@ -1,14 +1,28 @@
 # WebRelease2 Template Language Support
 
 VS Code 向けの WebRelease2 テンプレート言語サポート拡張機能です。`.wr2` / `.wr2t` を対象に、構文ハイライト、入力補助、静的な構文チェックを提供します。
+WebRelease Version 2.80Mの構文をベースにしてます。
 
-- 外部ランタイムの追加インストールは不要です（拡張機能に LSP サーバーを同梱しています）。
+<img width="953" height="681" alt="image" src="https://github.com/user-attachments/assets/877fb7cc-ffed-4276-bf8f-6a89f0589d44" />
+
+
+## インストール
+
+### VSIX からインストール
+
+1. [Releases](https://github.com/fourdigit/webrelease2-template-language-support/releases) から `.vsix` をダウンロード
+2. VS Code で `Extensions: Install from VSIX...` を実行
+3. ダウンロードした `.vsix` を選択
+
+### コマンドライン
+
+```bash
+code --install-extension webrelease2-template-lsp-0.9.0.vsix
+```
 
 ## 機能
 
 ### 構文ハイライト
-
-TextMate Grammar によるハイライトを提供します。
 
 - `%...%`（テンプレート式）
 - `<wr-*>`（WebRelease2 拡張タグ）
@@ -16,7 +30,6 @@ TextMate Grammar によるハイライトを提供します。
 - 属性
 - HTML / CSS / JavaScript / JSON の埋め込み（基本）
 
-<img width="982" height="623" alt="image" src="https://github.com/user-attachments/assets/a98c5103-527f-4913-a747-14edaf182a34" />
 
 
 ### 入力補助（補完）
@@ -93,21 +106,7 @@ TextMate Grammar によるハイライトを提供します。
 - **数値**: `round(num)`, `floor(num)`, `ceil(num)`, `abs(num)`, `min(a, b)`, `max(a, b)`, `divide(a, b, scale, mode)`, `setScale(num, scale)`
 - **その他**: `pageTitle()`, `currentTime()`, `formatDate(time, format)`, `generatePrice(...)`, `generateBenefit(...)`, `generateBakuage(...)`
 
-## インストール
-
-### VSIX からインストール
-
-1. [Releases](https://github.com/fourdigit/webrelease2-template-language-support/releases) から `.vsix` をダウンロード
-2. VS Code で `Extensions: Install from VSIX...` を実行
-3. ダウンロードした `.vsix` を選択
-
-### コマンドライン
-
-```bash
-code --install-extension webrelease2-template-lsp-0.9.0.vsix
-```
-
-## 開発
+## 拡張機能開発に関わる場合
 
 ### 前提
 
