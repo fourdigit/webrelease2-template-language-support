@@ -104,7 +104,7 @@ code --install-extension webrelease2-template-lsp-0.9.0.vsix
 - **変換**: `number(value)`, `string(value)`
 - **文字列/配列**: `length(value)`, `substring(str, start, end)`, `indexOf(str, substr)`, `contains(str, substr)`, `startsWith(str, prefix)`, `endsWith(str, suffix)`, `toUpperCase(str)`, `toLowerCase(str)`, `trim(str)`, `replace(str, from, to)`, `split(str, delimiter)`, `join(array, delimiter)`, `unsplit(...)`
 - **数値**: `round(num)`, `floor(num)`, `ceil(num)`, `abs(num)`, `min(a, b)`, `max(a, b)`, `divide(a, b, scale, mode)`, `setScale(num, scale)`
-- **その他**: `pageTitle()`, `currentTime()`, `formatDate(time, format)`, `generatePrice(...)`, `generateBenefit(...)`, `generateBakuage(...)`
+- **その他**: `pageTitle()`, `currentTime()`, `formatDate(time, format)`, `generatePrice(...)`, `generateBenefit(...)`, `generatefoobar(...)`
 
 ## 拡張機能開発に関わる場合
 
