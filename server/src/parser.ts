@@ -32,7 +32,7 @@ const BUILT_IN_FUNCTIONS = new Set([
   'number', 'string', 'divide', 'setScale', 'length', 'substring', 'indexOf',
   'contains', 'startsWith', 'endsWith', 'toUpperCase', 'toLowerCase', 'trim',
   'replace', 'split', 'join', 'round', 'floor', 'ceil', 'abs', 'min', 'max',
-  'unsplit', 'generatePrice', 'generateBenefit', 'generateBakuage',
+  'unsplit',
   'selectedValue', 'selectedName', 'selected'
 ]);
 

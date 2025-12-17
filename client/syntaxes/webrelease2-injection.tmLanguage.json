@@ -50,7 +50,7 @@
         },
         {
           "name": "support.function.webrelease2",
-          "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale|selectedValue|selectedName|selected|unsplit|generatePrice|generateBenefit|generateBakuage)\\b"
+          "match": "\\b(pageTitle|currentTime|formatDate|isNull|isNotNull|isNumber|number|string|length|substring|indexOf|contains|startsWith|endsWith|toUpperCase|toLowerCase|trim|replace|split|join|round|floor|ceil|abs|min|max|divide|setScale|selectedValue|selectedName|selected|unsplit)\\b"
         },
         {
           "name": "string.quoted.double.webrelease2",
