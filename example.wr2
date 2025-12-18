@@ -18,8 +18,7 @@
             <p>メールアドレスは登録されていません</p>
         </wr-else>
         <wr-for list="items" variable="item">
-            <p>%items.name%</p>
-        </wr-for>
+            <p>%items.name%</p
     </wr-if>
     <wr-if condition="isNotNull(email)">
         <wr-comment>

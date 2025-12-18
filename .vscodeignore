@@ -12,11 +12,10 @@ server/src/**
 **/*.map
 **/*.ts
 
-client/node_modules/**
-server/node_modules/**
-
 **/package-lock.json
 **/.gitignore
+
+
 
 
 
